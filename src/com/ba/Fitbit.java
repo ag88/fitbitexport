@@ -26,7 +26,7 @@ public class Fitbit {
 
 
 	public void initialise() {
-		log.debug("test");
+		log.info("test");
 		try {
 			FitbitOAuth20ServiceImpl service = (FitbitOAuth20ServiceImpl) new ServiceBuilder().provider(FitbitScripeApi.class).apiKey(CLIENT_ID).apiSecret(CLIENT_SECRET).callback("http://www.example.com/callback").scope("activity heartrate location nutrition sleep").build();
 
