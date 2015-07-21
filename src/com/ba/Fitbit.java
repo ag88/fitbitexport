@@ -1,9 +1,12 @@
 package com.ba;
 
-import java.io.BufferedReader;
+import static com.ba.AccessData.CLIENT_ID;
+import static com.ba.AccessData.CLIENT_SECRET;
+import static org.iq80.leveldb.impl.Iq80DBFactory.asString;
+import static org.iq80.leveldb.impl.Iq80DBFactory.bytes;
+
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Scanner;
 
 import org.iq80.leveldb.DB;
@@ -14,10 +17,6 @@ import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.model.Verifier;
-import org.scribe.oauth.OAuthService;
-import static com.ba.AccessData.*;
-
-import static org.iq80.leveldb.impl.Iq80DBFactory.*;
 
 public class Fitbit {
 	private static final Token EMPTY_TOKEN = null;
@@ -105,6 +104,7 @@ public class Fitbit {
 		System.out.println("Got the Access Token!");
 		System.out.println("(if your curious it looks like this: " + accessToken + " )");
 		System.out.println();
+		in.close();
 		return accessToken;
 	}
 	
@@ -127,16 +127,5 @@ public class Fitbit {
 		System.out.println("saved refreshToken: " + refreshToken);
 	}
 
-	private static String readLine() {
-		String string = "";
-		try {
-			InputStreamReader converter = new InputStreamReader(System.in);
-			BufferedReader in = new BufferedReader(converter);
-			string = in.readLine();
-		} catch (Exception e) {
-			System.out.println("Error! Exception: " + e);
-		}
-		return string;
-	}
 
 }
