@@ -17,13 +17,16 @@ import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.model.Verifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Fitbit {
 	private static final Token EMPTY_TOKEN = null;
-
+	private final Logger log = LoggerFactory.getLogger(Fitbit.class);
 
 
 	public void initialise() {
+		log.debug("test");
 		try {
 			FitbitOAuth20ServiceImpl service = (FitbitOAuth20ServiceImpl) new ServiceBuilder().provider(FitbitScripeApi.class).apiKey(CLIENT_ID).apiSecret(CLIENT_SECRET).callback("http://www.example.com/callback").scope("activity heartrate location nutrition sleep").build();
 
