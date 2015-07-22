@@ -33,7 +33,7 @@ public class Fitbit {
 	private static String CLIENT_SECRET;// = "fa3d326ed7bcc418c1bf9bcf2fa95c58";
 	private static String FITBITDB = System.getProperty("user.home")+"/.fitbitexport/fitbitdb";
 	
-	@Option(name="-v",usage="be verbose")
+	@Option(name="-v",usage="be verbose, log output will be written to std.err")
     private boolean verbose;
 	
 	@Option(name="-u",usage="name under which these tokens will be stored")
@@ -42,7 +42,7 @@ public class Fitbit {
 	@Option(name="-h",usage="print usage and exit")
     public boolean h = false;
 	
-	@Option(name="-call",usage="fitbit api call")
+	@Option(name="-call",usage="fitbit api call", required=true)
     private String apicall;
 	
 	public void run() {
