@@ -42,8 +42,10 @@ public class Fitbit {
 	@Option(name="-h",usage="print usage and exit")
     public boolean h = false;
 	
+	@Option(name="-call",usage="fitbit api call")
+    private String apicall;
 	
-	public void initialise() {
+	public void run() {
 
 		if(!verbose){
 			Logger log = Logger.getLogger("com.ba");
@@ -75,8 +77,8 @@ public class Fitbit {
 			Token accessToken = getAccessToken(service, refreshToken);
 			saveRefreshToken(service.getRefreshToken());
 			
-			OAuthRequest request = new OAuthRequest(Verb.GET, "https://api.fitbit.com/1/user/-/activities/heart/date/today/1d.json");
-			
+//			OAuthRequest request = new OAuthRequest(Verb.GET, "https://api.fitbit.com/1/user/-/activities/heart/date/today/1d.json");
+			OAuthRequest request = new OAuthRequest(Verb.GET, apicall);
 			service.signRequest(accessToken, request); 
 														
 			Response response = request.send();
@@ -98,7 +100,7 @@ public class Fitbit {
 
 			db = org.iq80.leveldb.impl.Iq80DBFactory.factory.open(new File(FITBITDB), options);
 
-			refreshToken = asString(db.get(bytes("refreshToken")));
+			refreshToken = asString(db.get(bytes(user+"refreshToken")));
 			db.close();
 
 		} catch (IOException e) {
@@ -152,8 +154,8 @@ public class Fitbit {
 			options.createIfMissing(true);
 			DB db;
 
-			db = org.iq80.leveldb.impl.Iq80DBFactory.factory.open(new File("fitbitdb"), options);
-			db.put(bytes("refreshToken"), bytes(refreshToken));
+			db = org.iq80.leveldb.impl.Iq80DBFactory.factory.open(new File(FITBITDB), options);
+			db.put(bytes(user+"refreshToken"), bytes(refreshToken));
 			db.close();
 
 		} catch (IOException e) {

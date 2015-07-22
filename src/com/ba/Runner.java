@@ -19,7 +19,7 @@ public class Runner {
                 	System.exit(0);
                 }
                 
-                fit.initialise();
+                fit.run();
         } catch (CmdLineException e) {
             // handling of wrong arguments
             System.err.println(e.getMessage());
