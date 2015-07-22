@@ -6,26 +6,68 @@ import static org.iq80.leveldb.impl.Iq80DBFactory.asString;
 import static org.iq80.leveldb.impl.Iq80DBFactory.bytes;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.Scanner;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
+import org.kohsuke.args4j.Option;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.model.Verifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 public class Fitbit {
 	private static final Token EMPTY_TOKEN = null;
-	private final Logger log = LoggerFactory.getLogger(Fitbit.class);
-
-
+	private final Logger log = Logger.getLogger(Fitbit.class);	
+	private static final String PROPERTIES_FILE = System.getProperty("user.home")+"/.fitbitexport/properties.txt";
+	private static String CLIENT_ID;// = "229MVP";
+	private static String CLIENT_SECRET;// = "fa3d326ed7bcc418c1bf9bcf2fa95c58";
+	private static String FITBITDB = System.getProperty("user.home")+"/.fitbitexport/fitbitdb";
+	
+	@Option(name="-v",usage="be verbose")
+    private boolean verbose;
+	
+	@Option(name="-u",usage="name under which these tokens will be stored")
+    private String user = "defaultUser";
+	
+	@Option(name="-h",usage="print usage and exit")
+    public boolean h = false;
+	
+	
 	public void initialise() {
+
+		if(!verbose){
+			Logger log = Logger.getLogger("com.ba");
+			log.setLevel(Level.ERROR);
+		}
+		
+		Properties properties = new Properties();
+		try {
+		  properties.load(new FileInputStream(PROPERTIES_FILE));
+		  CLIENT_ID = properties.getProperty("client_id");
+		  CLIENT_SECRET = properties.getProperty("client_secret");
+		  String dbLocation = properties.getProperty("client_secret");
+		  if(dbLocation != null)
+			  FITBITDB = dbLocation;
+		  
+		  if(CLIENT_ID == null || CLIENT_SECRET == null)
+			  	throw new RuntimeException("Missing properties");
+		} catch (Exception e) {
+		  log.error(e);
+		  log.error("There should be a propertiesfile:" + PROPERTIES_FILE + " containing, properties: client_id and client_secret from fitbit" );
+		  System.exit(1);
+		}
+		
+		
 		try {
 			FitbitOAuth20ServiceImpl service = (FitbitOAuth20ServiceImpl) new ServiceBuilder().provider(FitbitScripeApi.class).apiKey(CLIENT_ID).apiSecret(CLIENT_SECRET).callback("http://www.example.com/callback").scope("activity heartrate location nutrition sleep").build();
 
@@ -54,7 +96,7 @@ public class Fitbit {
 			options.createIfMissing(true);
 			DB db;
 
-			db = org.iq80.leveldb.impl.Iq80DBFactory.factory.open(new File("fitbitdb"), options);
+			db = org.iq80.leveldb.impl.Iq80DBFactory.factory.open(new File(FITBITDB), options);
 
 			refreshToken = asString(db.get(bytes("refreshToken")));
 			db.close();
@@ -97,6 +139,7 @@ public class Fitbit {
 		
 		log.debug("Got the Access Token!");
 		log.debug("(if your curious it looks like this: " + accessToken + " )");
+		
 		in.close();
 		return accessToken;
 	}
@@ -118,6 +161,7 @@ public class Fitbit {
 
 		}
 		log.debug("saved refreshToken: " + refreshToken);
+		
 	}
 
 
