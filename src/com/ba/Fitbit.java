@@ -26,7 +26,6 @@ public class Fitbit {
 
 
 	public void initialise() {
-		log.info("test");
 		try {
 			FitbitOAuth20ServiceImpl service = (FitbitOAuth20ServiceImpl) new ServiceBuilder().provider(FitbitScripeApi.class).apiKey(CLIENT_ID).apiSecret(CLIENT_SECRET).callback("http://www.example.com/callback").scope("activity heartrate location nutrition sleep").build();
 
@@ -42,19 +41,12 @@ public class Fitbit {
 			System.out.println(response.getBody());
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.warn("Exception:" + e);
 		}
 	}
 
-	// private class Response{
-	// public String access_token;
-	// public String
-	//
-	// }
-
 	private String loadRefreshToken() {
-		System.out.println("loading refreshToken...");
+		log.debug("loading refreshToken...");
 		String refreshToken = "";
 		try {
 
@@ -68,10 +60,10 @@ public class Fitbit {
 			db.close();
 
 		} catch (IOException e) {
-			System.out.println("Error! Exception: " + e);
+			log.warn("Error! Exception: " + e);
 
 		}
-		System.out.println("loaded refresh_token is: " + refreshToken);
+		log.debug("loaded refresh_token is: " + refreshToken);
 		return refreshToken;
 	}
 	
@@ -79,18 +71,17 @@ public class Fitbit {
 		Token accessToken = null;
 		
 		if(refreshToken != null){
-			System.out.println("Trying to get an access token from the saved refresh_token");
+			log.debug("Trying to get an access token from the saved refresh_token");
 			accessToken = service.getAccessToken(refreshToken);
 		}
 		if(accessToken != null){
-		System.out.println("Success");
+			log.debug("Success");
 			return accessToken;
 		}
-		System.out.println("Failed, falling back to showing auth url...");
+		log.debug("Failed, falling back to showing auth url...");
 			
 		String authUrl = service.getAuthorizationUrl(EMPTY_TOKEN);
-		System.out.println(authUrl);
-
+		
 		Scanner in = new Scanner(System.in);
 
 		System.out.println("Got the Authorization URL!");
@@ -101,18 +92,17 @@ public class Fitbit {
 		Verifier verifier = new Verifier(in.nextLine());
 		System.out.println();
 
-		System.out.println("Trading the Request Token for an Access Token...");
+		log.debug("Trading the Request Token for an Access Token...");
 		accessToken = service.getAccessToken(EMPTY_TOKEN, verifier);
 		
-		System.out.println("Got the Access Token!");
-		System.out.println("(if your curious it looks like this: " + accessToken + " )");
-		System.out.println();
+		log.debug("Got the Access Token!");
+		log.debug("(if your curious it looks like this: " + accessToken + " )");
 		in.close();
 		return accessToken;
 	}
 	
 	private void saveRefreshToken(String refreshToken) {
-		System.out.println("saving refreshToken...");
+		log.debug("saving refreshToken...");
 		try {
 
 			Options options = new Options();
@@ -124,10 +114,10 @@ public class Fitbit {
 			db.close();
 
 		} catch (IOException e) {
-			System.out.println("Error! Exception: " + e);
+			log.warn("Error! Exception: " + e);
 
 		}
-		System.out.println("saved refreshToken: " + refreshToken);
+		log.debug("saved refreshToken: " + refreshToken);
 	}
 
 

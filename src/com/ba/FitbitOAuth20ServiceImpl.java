@@ -8,13 +8,15 @@ import org.scribe.model.Token;
 import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuth20ServiceImpl;
 import org.scribe.oauth.OAuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author hexren
  *
  */
 public class FitbitOAuth20ServiceImpl extends OAuth20ServiceImpl implements OAuthService {
-
+	private final Logger log = LoggerFactory.getLogger(Fitbit.class);
 	private static final String VERSION = "2.0";
 	private static String BASE_USERID_SECRET;
 
@@ -68,7 +70,7 @@ public class FitbitOAuth20ServiceImpl extends OAuth20ServiceImpl implements OAut
 			response = request.send();
 			return api.getAccessTokenExtractor().extract(response.getBody());
 		} catch (Exception e) {
-			System.out.println("Warning! Could not use refresh token. Exception: " + e);
+			log.debug("Warning! Could not use refresh token. Exception: " + e);
 			return null;
 		}
 	}
