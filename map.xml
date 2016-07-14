@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map outdir="/home/user/fitbit/">
+	<entry seq="1" name="heart rate">
+		<apicall
+			url="https://api.fitbit.com/1/user/-/activities/heart/date/{ISO_DATE_DASH}/1d/1sec.json" />
+		<outfile name="hr-{ISO_DATE}-1s.json" />
+	</entry>
+	<entry seq="2" name="steps">
+		<apicall
+			url="https://api.fitbit.com/1/user/-/activities/steps/date/{ISO_DATE_DASH}/1d/15min.json" />
+		<outfile name="step-{ISO_DATE}.json" />
+	</entry>
+	<entry seq="3" name="sleep">
+		<apicall
+			url="https://api.fitbit.com/1/user/-/sleep/date/{ISO_DATE_DASH}.json" />
+		<outfile name="sleep-{ISO_DATE}.json" />
+	</entry>
+</map>

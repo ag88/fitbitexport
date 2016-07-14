@@ -3,9 +3,12 @@ package com.ba;
 import static org.iq80.leveldb.impl.Iq80DBFactory.asString;
 import static org.iq80.leveldb.impl.Iq80DBFactory.bytes;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -24,7 +27,8 @@ import org.scribe.model.Verifier;
 public class Fitbit {
 	private static final Token EMPTY_TOKEN = null;
 	private final Logger log = Logger.getLogger(Fitbit.class);
-	private static final String PROPERTIES_FILE = System.getProperty("user.home") + "/.fitbitexport/properties.txt";
+	private static String CONFIG_DIR;
+	private static String PROPERTIES_FILE;
 	private static String CLIENT_ID;
 	private static String CLIENT_SECRET;
 	private static String FITBITDB;
@@ -38,14 +42,25 @@ public class Fitbit {
 	@Option(name = "-h", usage = "print usage and exit")
 	public boolean h = false;
 
-	@Option(name = "-call", usage = "fitbit api call", required = true)
-	private String apicall;
+	//@Option(name = "-call", usage = "fitbit api call", required = true)
+	@Option(name = "-call", usage = "fitbit api call")
+	public String apicall;
 
-	public Fitbit() {
+	@Option(name = "-o", usage = "outputfile")
+	public File outfile;
+
+	@Option(name = "-s", usage = "sync")
+	public boolean bsync = false;
+
+	
+	public Fitbit(String configdir) {
+		
+		CONFIG_DIR = configdir;		
+		PROPERTIES_FILE = configdir.concat("properties.txt");
 		
 		if (!verbose) {
 			Logger log = Logger.getLogger("com.ba");
-			log.setLevel(Level.ERROR);
+			log.setLevel(Level.INFO);
 		}
 
 		Properties properties = new Properties();
@@ -66,9 +81,39 @@ public class Fitbit {
 		}
 
 	}
+	
+	public boolean getsync() {
+		return bsync;		
+	}
+	
+	public String getAPIcall() {
+		return this.apicall;
+	}
+	
+	public void setAPIcall(String apicall) {
+		this.apicall = apicall;
+	}
+	
+	public String getoutfile() {
+		String outname;
+		try {
+			outname = this.outfile.getCanonicalPath();
+		} catch (IOException e) {
+			log.error(e);
+			outname = null;
+		}		
+		return outname;
+	}
+	
+	public void setoutfile(String outfile) {
+		this.outfile = new File(outfile);
+	}
 
 	public void run() {
-		FITBITDB = System.getProperty("user.home") + "/.fitbitexport/fitbitdb";
+		
+				
+		FITBITDB = CONFIG_DIR.concat("fitbitdb");
+		
 		try {
 			FitbitOAuth20ServiceImpl service = (FitbitOAuth20ServiceImpl) new ServiceBuilder().provider(FitbitScripeApi.class).apiKey(CLIENT_ID).apiSecret(CLIENT_SECRET).callback("http://www.example.com/callback")
 					.scope("activity heartrate location nutrition sleep").build();
@@ -83,7 +128,19 @@ public class Fitbit {
 			service.signRequest(accessToken, request);
 
 			Response response = request.send();
-			System.out.println(response.getBody());
+			if (outfile==null)
+				System.out.println(response.getBody());
+			else {
+				try {
+					PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(outfile)));
+					writer.println(response.getBody());
+					writer.flush();
+					writer.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}								
+			}
 
 		} catch (Exception e) {
 			log.warn("Exception:" + e);
