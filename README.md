@@ -18,6 +18,7 @@
 
 * this file has the following components:
 
+```
 	<!-- in the element "map" the attribute "outdir" is the folder where you place your downloaded/exported files -->
 	<map outdir="/home/user/fitbit/"> 
 		<entry seq="1" name="heart rate">  
@@ -46,6 +47,7 @@
 			<outfile name="sleep-{ISO_DATE}.json" />
 		</entry>
 	</map>
+```
 
 * run fitbitexport using the -s (sync) option, e.g. java -jar target/FitbitBAHeart-0.0.1-SNAPSHOT.jar -s
 
