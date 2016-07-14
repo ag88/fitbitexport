@@ -17,6 +17,7 @@
 * this file needs to go into ~/.fitbitexport/map.xml
 
 * this file has the following components:
+
     <!-- in the element "map" the attribute "outdir" is the folder where you place your downloaded/exported files -->
     <map outdir="/home/user/fitbit/"> 
     	<entry seq="1" name="heart rate">  
