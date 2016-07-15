@@ -34,6 +34,11 @@ public class SyncMapParser {
 	
 	public int parse() {
 		
+		File file = new File(mapfile);
+		if (!file.exists()) {
+			return -2;
+		}
+		
 	    SAXParserFactory spf = SAXParserFactory.newInstance();
 	    //spf.setNamespaceAware(false);
 	    try {

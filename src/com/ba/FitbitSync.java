@@ -52,6 +52,9 @@ public class FitbitSync {
 				mlogger.debug(entry.toString());
 			}			
 		}
+		if (ret == -2) 
+			mlogger.error(mapfile.concat(" is required for the sync (-s) option, first create the file"));
+			
 		return ret;
 	}
 	
